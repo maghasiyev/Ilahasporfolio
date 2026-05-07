@@ -1,0 +1,6 @@
+{
+  "name": "Aura Creative Portfolio",
+  "description": "A high-end, eccentric portfolio for a graphic designer and illustrator featuring a built-in CMS, blog, and YouTube integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["firebase"]
+}

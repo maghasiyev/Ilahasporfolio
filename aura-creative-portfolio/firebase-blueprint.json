@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Portfolio Project",
+      "description": "A single project in the portfolio (Graphic Design, Illustration, or Sketch)",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string", "enum": ["Graphic Design", "Illustrations", "Sketches"] },
+        "imageUrl": { "type": "string" },
+        "youtubeId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "imageUrl"]
+    },
+    "BlogPost": {
+      "title": "Blog Post",
+      "description": "A blog article",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content"]
+    },
+    "SiteSettings": {
+      "title": "Site Settings",
+      "description": "Global settings like About Me, Resume, and Home Video",
+      "type": "object",
+      "properties": {
+        "aboutText": { "type": "string" },
+        "resumeUrl": { "type": "string" },
+        "youtubeVideoId": { "type": "string" },
+        "contactEmail": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "projects": {
+      "schema": "Project",
+      "description": "Portfolio work items"
+    },
+    "posts": {
+      "schema": "BlogPost",
+      "description": "Blog articles"
+    },
+    "settings": {
+      "schema": "SiteSettings",
+      "description": "Global static content"
+    }
+  }
+}

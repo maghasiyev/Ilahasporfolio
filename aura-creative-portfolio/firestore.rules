@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Primitive Definitions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'murad.agasiyev@gmail.com' && request.auth.token.email_verified == true
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Collection Rules
+    
+    // Project Rules
+    match /projects/{projectId} {
+      function isValidProject(data) {
+        return data.title is string && data.title.size() <= 200 &&
+               data.category in ['Graphic Design', 'Illustrations', 'Sketches'] &&
+               data.imageUrl is string && data.imageUrl.size() <= 1000;
+      }
+      
+      allow read: if true; // Public can see portfolio
+      allow create: if isAdmin() && isValidProject(incoming());
+      allow update: if isAdmin() && isValidProject(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'category', 'imageUrl', 'youtubeId', 'updatedAt'])
+      );
+      allow delete: if isAdmin();
+    }
+    
+    // Blog Post Rules
+    match /posts/{postId} {
+      function isValidPost(data) {
+        return data.title is string && data.title.size() <= 300 &&
+               data.content is string && data.content.size() <= 50000;
+      }
+
+      allow read: if true; // Public can read blog
+      allow create: if isAdmin() && isValidPost(incoming());
+      allow update: if isAdmin() && isValidPost(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'content', 'excerpt', 'imageUrl', 'published', 'updatedAt'])
+      );
+      allow delete: if isAdmin();
+    }
+    
+    // Settings Rules
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
